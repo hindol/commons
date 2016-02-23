@@ -1,6 +1,6 @@
-package com.vizury.systems.common.file;
+package com.github.hindol.commons.file;
 
-import com.vizury.systems.common.core.Service;
+import com.github.hindol.commons.core.Service;
 
 import java.io.IOException;
 import java.nio.file.Path;

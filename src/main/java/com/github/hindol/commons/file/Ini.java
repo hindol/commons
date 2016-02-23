@@ -1,4 +1,4 @@
-package com.vizury.systems.common.file;
+package com.github.hindol.commons.file;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.BufferedReader;

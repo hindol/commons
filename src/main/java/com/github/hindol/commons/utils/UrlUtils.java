@@ -1,4 +1,4 @@
-package com.vizury.systems.common.utils;
+package com.github.hindol.commons.utils;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;

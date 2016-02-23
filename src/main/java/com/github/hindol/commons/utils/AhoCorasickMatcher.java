@@ -1,4 +1,4 @@
-package com.vizury.systems.common.utils;
+package com.github.hindol.commons.utils;
 
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.arabidopsis.ahocorasick.SearchResult;

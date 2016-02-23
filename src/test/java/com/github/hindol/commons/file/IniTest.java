@@ -1,4 +1,4 @@
-package com.vizury.systems.common.file;
+package com.github.hindol.commons.file;
 
 import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;

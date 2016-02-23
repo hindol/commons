@@ -1,4 +1,4 @@
-package com.vizury.systems.common.core;
+package com.github.hindol.commons.core;
 
 /**
  * Interface definition for services.
