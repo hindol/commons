@@ -148,12 +148,12 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
         Set<PathMatcher> patterns = newConcurrentSet();
 
-        for (String globPattern : globPatterns) {
-            patterns.add(matcherForGlobExpression(globPattern));
+        if (globPatterns.length == 0) {
+            globPatterns = new String[]{"*"}; // Match everything if no filter is found
         }
 
-        if (patterns.isEmpty()) {
-            patterns.add(matcherForGlobExpression("*")); // Match everything if no filter is found
+        for (String globPattern : globPatterns) {
+            patterns.add(matcherForGlobExpression(globPattern));
         }
 
         mListenerToFilePatternsMap.put(listener, patterns);
