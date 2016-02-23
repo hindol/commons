@@ -174,10 +174,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
             try {
                 key = mWatchService.take();
             } catch (InterruptedException e) {
-                LOGGER.info(
-                        DirectoryWatchService.class.getSimpleName()
-                                + " service interrupted."
-                );
+                LOGGER.info(SimpleDirectoryWatchService.class.getSimpleName() + " service interrupted.");
                 break;
             }
 
@@ -210,7 +207,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     @Override
     public void start() {
         if (mIsRunning.compareAndSet(false, true)) {
-            Thread runnerThread = new Thread(this, DirectoryWatchService.class.getSimpleName());
+            Thread runnerThread = new Thread(this, SimpleDirectoryWatchService.class.getSimpleName());
             runnerThread.start();
         }
     }
