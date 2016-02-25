@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface Deduplicator<T> {
 
-    boolean add(T element);
+    boolean isNew(T element);
 
     List<T> newSinceLast();
 
