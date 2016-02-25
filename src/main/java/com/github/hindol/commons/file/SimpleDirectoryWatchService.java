@@ -148,12 +148,12 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
         Set<PathMatcher> patterns = newConcurrentSet();
 
-        for (String globPattern : globPatterns) {
-            patterns.add(matcherForGlobExpression(globPattern));
+        if (globPatterns.length == 0) {
+            globPatterns = new String[]{"*"}; // Match everything if no filter is found
         }
 
-        if (patterns.isEmpty()) {
-            patterns.add(matcherForGlobExpression("*")); // Match everything if no filter is found
+        for (String globPattern : globPatterns) {
+            patterns.add(matcherForGlobExpression(globPattern));
         }
 
         mListenerToFilePatternsMap.put(listener, patterns);
@@ -174,10 +174,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
             try {
                 key = mWatchService.take();
             } catch (InterruptedException e) {
-                LOGGER.info(
-                        DirectoryWatchService.class.getSimpleName()
-                                + " service interrupted."
-                );
+                LOGGER.info(SimpleDirectoryWatchService.class.getSimpleName() + " service interrupted.");
                 break;
             }
 
@@ -210,7 +207,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     @Override
     public void start() {
         if (mIsRunning.compareAndSet(false, true)) {
-            Thread runnerThread = new Thread(this, DirectoryWatchService.class.getSimpleName());
+            Thread runnerThread = new Thread(this, SimpleDirectoryWatchService.class.getSimpleName());
             runnerThread.start();
         }
     }
