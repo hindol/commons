@@ -4,41 +4,48 @@ import java.util.*;
 
 public class InMemoryDeduplicator<T> implements Deduplicator<T> {
 
-    private final boolean mKeepOrder;
-    private Set<T> mElements;
+    private final Set<? super T> mBackingSet;
+    private List<T> mNewSinceLast;
 
     public InMemoryDeduplicator() {
-        this(true);
+        mBackingSet = new HashSet<>();
+        mNewSinceLast = new ArrayList<>();
     }
 
-    public InMemoryDeduplicator(boolean keepOrder) {
-        mKeepOrder = keepOrder;
-        mElements = newSet(mKeepOrder);
-    }
-
-    private Set<T> newSet(Collection<? extends T> source, boolean ordered) {
-        return ordered ? new LinkedHashSet<>(source) : new HashSet<>(source);
-    }
-
-    private Set<T> newSet(boolean ordered) {
-        return newSet(Collections.emptySet(), ordered);
+    public InMemoryDeduplicator(Set<? super T> backingSet) {
+        mBackingSet = backingSet;
+        mNewSinceLast = new ArrayList<>();
     }
 
     @Override
     public boolean add(T element) {
-        return mElements.add(element);
+        if (mBackingSet.add(element)) {
+            mNewSinceLast.add(element);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public Set<T> peek() {
-        return Collections.unmodifiableSet(mElements);
+    public List<T> newSinceLast() {
+        return newSinceLast(false);
     }
 
     @Override
-    public Set<T> reset() {
-        Set<T> existing = mElements;
-        mElements = newSet(mKeepOrder);
+    public List<T> newSinceLast(boolean reset) {
+        List<T> copy = mNewSinceLast;
+        mNewSinceLast = new ArrayList<>();
 
-        return existing;
+        if (reset) {
+            mBackingSet.clear();
+        }
+
+        return copy;
+    }
+
+    @Override
+    public List<T> reset() {
+        return newSinceLast(true);
     }
 }
