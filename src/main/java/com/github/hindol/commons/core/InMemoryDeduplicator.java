@@ -18,7 +18,7 @@ public class InMemoryDeduplicator<T> implements Deduplicator<T> {
     }
 
     @Override
-    public boolean add(T element) {
+    public boolean isNew(T element) {
         if (mBackingSet.add(element)) {
             mNewSinceLast.add(element);
             return true;
