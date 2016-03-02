@@ -38,20 +38,20 @@ public interface DirectoryWatchService extends Service {
 
         /**
          * Called when the file is created.
-         * @param filePath The file path.
+         * @param fileName The file name.
          */
-        default void onFileCreate(Path filePath) {}
+        default void onFileCreate(String fileName) {}
 
         /**
          * Called when the file is modified.
-         * @param filePath The file path.
+         * @param fileName The file name.
          */
-        default void onFileModify(Path filePath) {}
+        default void onFileModify(String fileName) {}
 
         /**
          * Called when the file is deleted.
-         * @param filePath The file path.
+         * @param fileName The file name.
          */
-        default void onFileDelete(Path filePath) {}
+        default void onFileDelete(String fileName) {}
     }
 }

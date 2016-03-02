@@ -111,13 +111,13 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
             if (eventKind.equals(ENTRY_CREATE)) {
                 matchedListeners(dir, file)
-                        .forEach(l -> l.onFileCreate(file));
+                        .forEach(l -> l.onFileCreate(file.toString()));
             } else if (eventKind.equals(ENTRY_MODIFY)) {
                 matchedListeners(dir, file)
-                        .forEach(l -> l.onFileModify(file));
+                        .forEach(l -> l.onFileModify(file.toString()));
             } else if (eventKind.equals(ENTRY_DELETE)) {
                 matchedListeners(dir, file)
-                        .forEach(l -> l.onFileDelete(file));
+                        .forEach(l -> l.onFileDelete(file.toString()));
             }
         }
     }
