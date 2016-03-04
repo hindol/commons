@@ -1,14 +1,13 @@
 package com.github.hindol.commons.file;
 
+import com.github.hindol.commons.utils.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -39,9 +38,9 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     public SimpleDirectoryWatchService() throws IOException {
         mWatchService = FileSystems.getDefault().newWatchService();
         mIsRunning = new AtomicBoolean(false);
-        mWatchKeyToDirectoryMap = newConcurrentMap();
-        mDirectoryToListenersMap = newConcurrentMap();
-        mListenerToFilePatternsMap = newConcurrentMap();
+        mWatchKeyToDirectoryMap = CollectionUtils.newConcurrentMap();
+        mDirectoryToListenersMap = CollectionUtils.newConcurrentMap();
+        mListenerToFilePatternsMap = CollectionUtils.newConcurrentMap();
     }
 
     @SuppressWarnings("unchecked")
@@ -49,23 +48,15 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
         return (WatchEvent<T>) event;
     }
 
-    private static <K, V> ConcurrentMap<K, V> newConcurrentMap() {
-        return new ConcurrentHashMap<>();
-    }
-
-    private static <T> Set<T> newConcurrentSet() {
-        return Collections.newSetFromMap(newConcurrentMap());
-    }
-
-    public static PathMatcher matcherForGlobExpression(String globPattern) {
+    private static PathMatcher matcherForGlobExpression(String globPattern) {
         return FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
     }
 
-    public static boolean matches(Path input, PathMatcher pattern) {
+    private static boolean matches(Path input, PathMatcher pattern) {
         return pattern.matches(input);
     }
 
-    public static boolean matchesAny(Path input, Set<PathMatcher> patterns) {
+    private static boolean matchesAny(Path input, Set<PathMatcher> patterns) {
         for (PathMatcher pattern : patterns) {
             if (matches(input, pattern)) {
                 return true;
@@ -126,30 +117,37 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
      * {@inheritDoc}
      */
     @Override
-    public void register(OnFileChangeListener listener, String dirPath, String... globPatterns)
+    public void register(OnFileChangeListener listener, Path dirPath, String... globPatterns)
             throws IOException {
-        Path dir = Paths.get(dirPath);
 
-        if (!Files.isDirectory(dir)) {
+        Set<String> patternsSet = CollectionUtils.newHashSet(globPatterns);
+        register(listener, dirPath, patternsSet);
+    }
+
+    @Override
+    public void register(OnFileChangeListener listener, Path dirPath, Collection<String> globPatterns)
+        throws IOException {
+
+        if (!Files.isDirectory(dirPath)) {
             throw new IllegalArgumentException(dirPath + " is not a directory.");
         }
 
-        if (!mDirectoryToListenersMap.containsKey(dir)) {
+        if (!mDirectoryToListenersMap.containsKey(dirPath)) {
             // May throw
-            WatchKey key = dir.register(
-                    mWatchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE
+            WatchKey key = dirPath.register(
+                mWatchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE
             );
 
-            mWatchKeyToDirectoryMap.put(key, dir);
-            mDirectoryToListenersMap.put(dir, newConcurrentSet());
+            mWatchKeyToDirectoryMap.put(key, dirPath);
+            mDirectoryToListenersMap.put(dirPath, CollectionUtils.newConcurrentSet());
         }
 
-        getListeners(dir).add(listener);
+        getListeners(dirPath).add(listener);
 
-        Set<PathMatcher> patterns = newConcurrentSet();
+        Set<PathMatcher> patterns = CollectionUtils.newConcurrentSet();
 
-        if (globPatterns.length == 0) {
-            globPatterns = new String[]{"*"}; // Match everything if no filter is found
+        if (globPatterns.isEmpty()) {
+            globPatterns = CollectionUtils.newHashSet("*"); // Match everything if no filter is found
         }
 
         for (String globPattern : globPatterns) {
@@ -158,8 +156,8 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
         mListenerToFilePatternsMap.put(listener, patterns);
 
-        LOGGER.info("Watching files matching " + Arrays.toString(globPatterns)
-                + " under " + dirPath + " for changes.");
+        LOGGER.info("Watching files matching [" + String.join(", ", globPatterns)
+            + "] under " + dirPath + " for changes.");
     }
 
     /**
