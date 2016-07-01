@@ -1,4 +1,4 @@
-package com.github.hindol.commons.utils;
+package com.github.hindol.commons.util;
 
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.arabidopsis.ahocorasick.SearchResult;
