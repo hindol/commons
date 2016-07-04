@@ -11,10 +11,41 @@ Reads configuration parameters from environment variables and Java system proper
 
 ```java
 String javaHome = Argument.resolver()
-    .firstTry("javaHome", Argument.Type.PROPERTY) // -DjavaHome="..."
-    .thenTry("JAVA_HOME", Argument.Type.ENVIRONMENT_VARIABLE) // export JAVA_HOME=...
-    .orElse("/usr/lib/jvm/openjdk-8-jdk/")
-    .resolve();
+        .firstTry("javaHome", Argument.Type.PROPERTY) // -DjavaHome="..."
+        .thenTry("JAVA_HOME", Argument.Type.ENVIRONMENT_VARIABLE) // export JAVA_HOME=...
+        .orElse("/usr/lib/jvm/openjdk-8-jdk/")
+        .resolve();
+```
+
+## BackOffPolicy
+
+Back-off policy for anything web.
+
+### Usage
+
+```java
+BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy.Builder()
+		.setInitialInterval(1, TimeUnit.SECONDS)
+        .setMaxInterval(1, TimeUnit.MINUTES)
+        .setMultiplier(1.5)
+        .setMaxElapsedTime(15, TimeUnit.MINUTES)
+        .setRandomizationFactor(0.5)
+        .build();
+
+// Pseudo code, won't compile
+while (true) {
+	try {
+    	String response = url.fetch();
+        backOffPolicy.reset();
+    } catch (IOException ioe) {
+    	long interval = backOffPolicy.nextIntervalMillis();
+        if (interval != BackOffPolicy.STOP) {
+        	Thread.sleep(interval);
+        } else {
+        	throw e;
+        }
+    }
+}
 ```
 
 ## DirectoryWatcher
