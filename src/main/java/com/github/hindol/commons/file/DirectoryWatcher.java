@@ -63,6 +63,7 @@ public class DirectoryWatcher implements Runnable, Service {
     public void stop() {
         mWatcherTask.cancel(true);
         mWatcherTask = null;
+        EXECUTOR.shutdown();
     }
 
     @Override
@@ -100,11 +101,8 @@ public class DirectoryWatcher implements Runnable, Service {
                 break;
             }
 
-            WatchKey key;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
+            WatchKey key = watchService.poll();
+            if(key == null) {
                 continue;
             }
 
@@ -137,6 +135,7 @@ public class DirectoryWatcher implements Runnable, Service {
                 }
             }
         }
+        LOGGER.trace("exiting DirectoryWatcher.run");
     }
 
     public interface Listener {
