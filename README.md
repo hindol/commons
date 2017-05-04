@@ -25,7 +25,7 @@ Back-off policy for anything web.
 
 ```java
 BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy.Builder()
-		.setInitialInterval(1, TimeUnit.SECONDS)
+        .setInitialInterval(1, TimeUnit.SECONDS)
         .setMaxInterval(1, TimeUnit.MINUTES)
         .setMultiplier(1.5)
         .setMaxElapsedTime(15, TimeUnit.MINUTES)
