@@ -83,6 +83,53 @@ try {
 }
 ```
 
+## XML
+
+DSL like XML creation.
+
+### Usage
+
+```java
+String xml = Xml.createWriter()
+                    .beginElement("VAST")
+                        .attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+                        .attribute("xsi:noNamespaceSchemaLocation", "vast.xsd")
+                        .attribute("version", "3.0")
+                        .beginElement("Ad")
+                            .attribute("id", "xyz")
+                            .beginElement("Wrapper")
+                                .element("AdSystem", "Vizury")
+                                .element("VASTAdTagURI", Xml.wrapInCdata("https://www.vizury.com/"))
+                                .element("Error", Xml.wrapInCdata("https://www.vizury.com/"))
+                                .element("Impression", Xml.wrapInCdata("https://www.vizury.com/"))
+                                .beginElement("Creatives")
+                                    .beginElement("Creative")
+                                        .attribute("AdID", "xyz")
+                                    .endElement()
+                                .endElement()
+                            .endElement()
+                        .endElement()
+                    .endElement().toXml();
+```
+
+The above code creates the following XML (minus the indentation of course),
+
+```xml
+<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="vast.xsd"
+      version="3.0">
+    <Ad id="xyz">
+        <Wrapper>
+            <AdSystem>Vizury</AdSystem>
+            <VASTAdTagURI><![CDATA[https://www.vizury.com/]]></VASTAdTagURI>
+            <Error><![CDATA[https://www.vizury.com/]]></Error>
+            <Impression><![CDATA[https://www.vizury.com/]]></Impression>
+            <Creatives><Creative AdID="xyz" /></Creatives>
+        </Wrapper>
+    </Ad>
+</VAST>
+```
+
 ## Template
 
 Simple string templates.
