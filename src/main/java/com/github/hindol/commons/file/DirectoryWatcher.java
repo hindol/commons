@@ -34,7 +34,7 @@ public class DirectoryWatcher implements Runnable, Service {
                 put(ENTRY_DELETE, Event.ENTRY_DELETE);
             }};
 
-    private final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private ExecutorService mExecutor;
     private Future<?> mWatcherTask;
 
     private final Set<Path> mWatched;
@@ -56,13 +56,16 @@ public class DirectoryWatcher implements Runnable, Service {
 
     @Override
     public void start() throws Exception {
-        mWatcherTask = EXECUTOR.submit(this);
+        mExecutor = Executors.newSingleThreadExecutor();
+        mWatcherTask = mExecutor.submit(this);
     }
 
     @Override
     public void stop() {
         mWatcherTask.cancel(true);
         mWatcherTask = null;
+        mExecutor.shutdown();
+        mExecutor = null;
     }
 
     @Override
