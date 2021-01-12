@@ -34,15 +34,15 @@ BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy.Builder()
 
 // Pseudo code, won't compile
 while (true) {
-	try {
+    try {
     	String response = url.fetch();
         backOffPolicy.reset();
     } catch (IOException ioe) {
     	long interval = backOffPolicy.nextIntervalMillis();
         if (interval != BackOffPolicy.STOP) {
-        	Thread.sleep(interval);
+            Thread.sleep(interval);
         } else {
-        	throw e;
+            throw e;
         }
     }
 }
